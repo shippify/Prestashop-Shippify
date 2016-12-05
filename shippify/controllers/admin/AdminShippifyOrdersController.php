@@ -14,6 +14,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
     $this->context = Context::getContext();
 
     $this->_select = '
+    UPPER(case a.status when 0 then "NOT CREATED" when 1 then "CREATED" end) AS shippify_status,
     a.id_order AS id,
     ords.id_currency,
     ords.id_order AS id_pdf,
@@ -47,21 +48,27 @@ class AdminShippifyOrdersController extends ModuleAdminController
 
     $this->fields_list = array(
       'id_shippify_order' => array(
-        'title' => $this->l('Shippify Order ID')
+        'title' => $this->l('Shippify Order ID'),
+        'filter_key' => 'a!id_shippify_order'
       ),
       'id' => array(
         'title' => $this->l('ID'),
         'align' => 'text-center',
-        'class' => 'fixed-width-xs'
+        'class' => 'fixed-width-xs',
+        'filter_key' => 'ords!id_order'
       ),
-      'status' => array(
+      'task_id' => array(
+        'title' => $this->l('Task ID')
+      ),
+      'shippify_status' => array(
         'title' => $this->l('Shippify Status'),
         // 'type' => 'select',
-        // 'color' => 'color',
+        'color' => 'color',
         // 'list' => array(
         //   '0' => 'Not created',
         //   '1' => 'Created'
         // ),
+        'filter_key' => 'a!shippify_status'
       ),
       'customer' => array(
         'title' => $this->l('Customer'),
@@ -192,7 +199,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
     $response = file_get_contents('http://staging.shippify.co/task/new', FALSE, $context);
     if ($response === FALSE) return FALSE;
     $response_data = json_decode($response, TRUE);
-    $sql = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = 1 WHERE `id_shippify_order` = ' . $id_shippify_order;
+    $sql = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = 1, `task_id` = \'' . $response_data['id'] . '\' WHERE `id_shippify_order` = ' . $id_shippify_order;
     return Db::getInstance()->execute($sql);
   }
 }

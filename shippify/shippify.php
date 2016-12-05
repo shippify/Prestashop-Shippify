@@ -41,7 +41,7 @@ class Shippify extends Module
   }
   public function createShippifyOrdersTable()
   {
-    $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'shippify_order` (`id_shippify_order` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `id_order` INT(11) NOT NULL, `status` TINYINT(1) NOT NULL DEFAULT 0)';
+    $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'shippify_order` (`id_shippify_order` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `id_order` INT(11) NOT NULL, `status` TINYINT(1) NOT NULL DEFAULT 0, `task_id` VARCHAR(20) DEFAULT NULL)';
     return Db::getInstance()->execute($sql);
   }
   public function uninstall()
