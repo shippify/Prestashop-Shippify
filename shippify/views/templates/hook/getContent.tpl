@@ -1,17 +1,17 @@
 <fieldset>
-  <h2>Shippify Module configuration</h2>
+  <h2>{l s='Shippify Module configuration' mod='shippify'}</h2>
 
   <div class="panel">
     <div class="panel-heading">
-      <legend><img src="../img/admin/cog.gif" alt="" width="16"/>Configuration</legend>
+      <legend><img src="../img/admin/cog.gif" alt="" width="16"/>{l s='Configuration' mod='shippify'}</legend>
     </div>
     <form action="" method="post">
       <div class="form-group clearfix">
-        <label class="col-lg-3">Insert Shippify API credentials</label>
+        <label class="col-lg-3">{l s='Insert Shippify API credentials' mod='shippify'}</label>
         <div class="col-lg-9">
-          <label class="t">API Id:</label>
+          <label class="t">{l s='API Id:' mod='shippify'}</label>
           <input type="text" id="shpy__configuration__api-id__input" name="api-id" {if isset($api_id)}value="{$api_id}"{/if}/>
-          <label class="t">API Secret:</label>
+          <label class="t">{l s='API Secret:' mod='shippify'}</label>
           <input type="text" id="shpy__configuration__api-secret__input" name="api-secret" {if isset($api_secret)}value="{$api_secret}"{/if}/>
         </div>
         {if isset($success_credentials)}
@@ -22,11 +22,11 @@
         {/if}
       </div>
       <div class="form-group clearfix">
-        <label class="col-lg-3">Insert your company's warehouse id number.</label>
+        <label class="col-lg-3">{l s='Insert your company\'s warehouse id number.' mod='shippify'}</label>
         <div class="col-lg-9">
           <input type="text" id="shpy__configuration__warehouse-id__input" name="warehouse-id" {if isset($warehouse_id)}value="{$warehouse_id}"{/if}/>
         </div>
-        <p class="t">* If you don't have one yet, create a warehouse in the shippify platform.</p>
+        <p class="t">{l s='* If you don\'t have one yet, create a warehouse in the shippify platform.' mod='shippify'}</p>
         {if isset($success_warehouse)}
           <div class="alert alert-success">{$success_warehouse}</div>
         {/if}
@@ -35,7 +35,7 @@
         {/if}
       </div>
       <div class="form-group clearfix">
-        <label class="col-lg-3">Insert an email for pickup contact support.</label>
+        <label class="col-lg-3">{l s='Insert an email for pickup contact support.' mod='shippify'}</label>
         <div class="col-lg-9">
           <input type="text" id="shpy__configuration__support-email__input" name="sender-support-email" {if isset($sender_support_email)}value="{$sender_support_email}"{/if} placeholder="E.g. support@mycompany.com"/>
         </div>
