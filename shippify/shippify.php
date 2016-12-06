@@ -127,7 +127,7 @@ class Shippify extends Module
         {
           $api_token = base64_encode($api_id . ':' . $api_secret);
           $ch = curl_init();
-          $url = 'http://staging.shippify.co/warehouses/' . (!empty($id_warehouse) ? $id_warehouse : 'none') . '/id';
+          $url = 'https://api.shippify.co/warehouses/' . (!empty($id_warehouse) ? $id_warehouse : 'none') . '/id';
 
           curl_setopt($ch, CURLOPT_URL, $url);
           curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

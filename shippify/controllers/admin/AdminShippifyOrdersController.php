@@ -196,7 +196,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
         'content' => json_encode($post_data)
       )
     ));
-    $response = file_get_contents('http://staging.shippify.co/task/new', FALSE, $context);
+    $response = file_get_contents('https://api.shippify.co/task/new', FALSE, $context);
     if ($response === FALSE) return FALSE;
     $response_data = json_decode($response, TRUE);
     $sql = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = 1, `task_id` = \'' . $response_data['id'] . '\' WHERE `id_shippify_order` = ' . $id_shippify_order;
