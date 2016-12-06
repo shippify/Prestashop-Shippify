@@ -126,7 +126,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
     $tpl->assign(array(
       'href' => self::$currentIndex.'&token='.$this->token.'&
       '.$this->identifier.'='.$id.'&shipit'.$this->table.'=1',
-      'action' => $this->l('Ship it')
+      'action' => $this->l('Ship!')
     ));
     return $tpl->fetch();
   }
