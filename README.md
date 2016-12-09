@@ -1,7 +1,7 @@
 # Prestashop-Shippify
 Shippify's Prestashop module for easily creating tasks inside the Shippify platform.
 
-<p align="center"><img src="https://cloud.githubusercontent.com/assets/14082276/20902548/9be39fd8-bb05-11e6-8df0-aecca9115587.png" width="600"/></p>
+<p align="center"><img src="https://cloud.githubusercontent.com/assets/14082276/21063131/12ac5f0a-be22-11e6-9f13-591a527eb3c8.png" width="600"/></p>
 
 ## Installation
 
@@ -38,7 +38,7 @@ All the fields are required to create tasks using the module.
 ## Module flow
 At the moment a customer makes a purchase from your store, after going through checkout, a special Shippify order is created as well in your Prestashop store database.
 
-<p align="center"><img width="600" alt="screen shot 2016-12-05 at 3 09 45 pm" src="https://cloud.githubusercontent.com/assets/14082276/20902549/9be49884-bb05-11e6-8039-0e4fbcfb53ff.png"></p>
+<p align="center"><img width="600" alt="screen shot 2016-12-05 at 3 09 45 pm" src="https://cloud.githubusercontent.com/assets/14082276/21063129/12abe96c-be22-11e6-8639-0e4cb9e572bd.png"></p>
 
 This order holds a link with a task in the Shippify's service database. You can manage the pending shippify orders from your Prestashop Store in the Orders > Shippify Orders.
 
@@ -46,6 +46,8 @@ This order holds a link with a task in the Shippify's service database. You can 
 
 Once you select an order and Ship It!!!, the associated task will be created in the Shippify server and will be ready to be dispatched by our Shippers to your customers.
 
-<p align="center"><img width="600" alt="screen shot 2016-12-05 at 3 10 37 pm" src="https://cloud.githubusercontent.com/assets/14082276/20902545/9be07790-bb05-11e6-80b8-c5f7d69adc3b.png"></p>
+<p align="center"><img width="600" alt="screen shot 2016-12-05 at 3 10 37 pm" src="https://cloud.githubusercontent.com/assets/14082276/21063130/12ac4c54-be22-11e6-9152-6acc1c78589b.png"></p>
+
+Already confirmed orders will have instead a Track button, which redirects to the Shippify's task tracking page.
 
 You can further manage your tasks from your shippify dashboard in https://admin.shippify.co.
