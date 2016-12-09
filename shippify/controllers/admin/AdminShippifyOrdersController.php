@@ -117,16 +117,29 @@ class AdminShippifyOrdersController extends ModuleAdminController
 
     $this->addRowAction('shippify');
 
+    $confirmed_orders_sql = "select id_shippify_order, task_id from `" . _DB_PREFIX_ . "shippify_order` where task_id is not null";
+    $confirmed_orders = Db::getInstance()->executeS($confirmed_orders_sql);
+
+    $get_id_from_order = function ($order_ids, $order) {
+      $order_ids[$order['id_shippify_order']] = $order['task_id'];
+      return $order_ids;
+    };
+
+    $confirmed_orders_by_id = array_reduce($confirmed_orders, $get_id_from_order, array());
+
+    $this->confirmed_orders_by_id = $confirmed_orders_by_id;
+
     parent::__construct();
   }
 
   public function displayShippifyLink($token, $id)
   {
+    $order_is_confirmed = array_key_exists($id, $this->confirmed_orders_by_id);
     $tpl = $this->context->smarty->createTemplate(_PS_MODULE_DIR_ . '/shippify/views/templates/admin/shipItLink.tpl', $this->context->smarty);
     $tpl->assign(array(
-      'href' => self::$currentIndex.'&token='.$this->token.'&
-      '.$this->identifier.'='.$id.'&shipit'.$this->table.'=1',
-      'action' => $this->l('Ship!')
+      'href' => $order_is_confirmed ? ('https://admin.shippify.co/track/' . $this->confirmed_orders_by_id[$id])  : (self::$currentIndex.'&token='.$this->token.'&
+      '.$this->identifier.'='.$id.'&shipit'.$this->table.'=1'),
+      'action' => $this->l($order_is_confirmed ? 'Track' : 'Ship!')
     ));
     return $tpl->fetch();
   }
@@ -200,6 +213,10 @@ class AdminShippifyOrdersController extends ModuleAdminController
     if ($response === FALSE) return FALSE;
     $response_data = json_decode($response, TRUE);
     $sql = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = 1, `task_id` = \'' . $response_data['id'] . '\' WHERE `id_shippify_order` = ' . $id_shippify_order;
-    return Db::getInstance()->execute($sql);
+    if (Db::getInstance()->execute($sql)) {
+      $this->confirmed_orders_by_id[$id_shippify_order] = $response_data['id'];
+      return TRUE;
+    }
+    return FALSE;
   }
 }
