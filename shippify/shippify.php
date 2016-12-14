@@ -1,4 +1,5 @@
 <?php
+require_once(dirname(__FILE__).'/classes/ShippifyOrder.php');
 class Shippify extends Module
 {
   public function __construct()
