@@ -46,6 +46,26 @@
           <div class="alert alert-danger">{$failure_email}</div>
         {/if}
       </div>
+      <div class="form-group clearfix">
+        <label class="col-lg-3">{l s='Select a zone for shippify to operate in.' mod='shippify'}</label>
+        <div class="col-lg-9">
+          <select id="shpy__configuration__operating-zone__input" name="operating-zone" value="{$selected_zone_id}">
+            <option value="-1">{l s='Select zone' mod='shippify'}</h3>
+            {section name=co loop=$available_zones}
+              <option value="{$available_zones[co].id_zone}"{if $available_zones[co].selected == '1' } selected{/if}>{$available_zones[co].name}</h3>
+            {sectionelse}
+              <option value="-1">{l s='No zones found' mod='shippify'}</option>
+            {/section}
+          </select>
+        </div>
+        <p class="t">{l s='* If a zone is not selected, shippify will create orders for all zones.' mod='shippify'}</p>
+        {if isset($success_zone)}
+          <div class="alert alert-success">{$success_zone}</div>
+        {/if}
+        {if isset($failure_zone)}
+          <div class="alert alert-danger">{$failure_zone}</div>
+        {/if}
+      </div>
       <div class="panel-footer">
         <input class="btn btn-default pull-right" type="submit" name="configuration-submit" value="Save"/>
       </div>
