@@ -9,8 +9,6 @@ class AdminShippifyOrdersController extends ModuleAdminController
 
     $this->lang = false;
     $this->explicitSelect = true;
-    // $this->allow_export = true;
-    // $this->deleted = false;
     $this->context = Context::getContext();
 
     $this->_select = '
@@ -129,6 +127,13 @@ class AdminShippifyOrdersController extends ModuleAdminController
 
     $this->confirmed_orders_by_id = $confirmed_orders_by_id;
 
+    $this->bulk_actions = array(
+      'shipit' => array(
+        'text' => 'Ship!',
+        'confirm' => 'Create tasks from selected orders'
+      )
+    );
+
     parent::__construct();
   }
 
@@ -153,6 +158,103 @@ class AdminShippifyOrdersController extends ModuleAdminController
     }
   }
 
+  public function processBulkShipit()
+  {
+    $api_token = Configuration::get('SHPY_API_TOKEN', '');
+    $id_warehouse = Configuration::get('SHPY_WAREHOUSE_ID', '');
+    $sender_support_email = Configuration::get('SHPY_SUPPORT_EMAIL', '');
+    if (empty($api_token)) return FALSE;
+    if (empty($id_warehouse)) return FALSE;
+    if (empty($sender_support_email)) return FALSE;
+
+    if (is_array($this->boxes) && !empty($this->boxes))
+    {
+      $ids_shippify_order = $this->boxes;
+      $orders_sql = 'SELECT shps.id_shippify_order, ords.id_order AS id, shps.status AS shippify_order_status, ords.total_paid, CONCAT(cuts.firstname, \' \', cuts.lastname) AS customer_name, cuts.email AS customer_email, adrs.phone AS customer_phone, adrs.phone_mobile AS customer_mobile, adrs.address1, adrs.address2, adrs.postcode, adrs.city FROM `' . _DB_PREFIX_ . 'shippify_order` shps INNER JOIN `' . _DB_PREFIX_ . 'orders` ords ON shps.id_order = ords.id_order INNER JOIN `' . _DB_PREFIX_ . 'customer` cuts ON ords.id_customer = cuts.id_customer INNER JOIN `' . _DB_PREFIX_ . 'address` adrs ON ords.id_address_delivery = adrs.id_address WHERE shps.status != 1 AND shps.id_shippify_order IN (' . join(',', $ids_shippify_order) . ')';
+      $pending_orders = Db::getInstance()->executeS($orders_sql);
+
+      if (!$pending_orders || empty($pending_orders)) return TRUE;
+
+      $get_id_from_order = function ($order) {
+        return $order['id'];
+      };
+
+      $pending_order_ids = array_map($get_id_from_order, $pending_orders);
+
+      if (!$pending_order_ids || empty($pending_order_ids)) return TRUE;
+
+      $products_sql = 'SELECT shps.`id_order`, dets.`product_id` AS id, dets.`product_name` AS name, dets.`product_quantity` AS qty, prds.height, prds.width, prds.depth, 3 as size FROM `' . _DB_PREFIX_ . 'shippify_order` shps INNER JOIN `' .  _DB_PREFIX_ . 'order_detail` dets ON shps.id_order = dets.id_order INNER JOIN `' . _DB_PREFIX_ . 'product` prds ON dets.product_id = prds.id_product WHERE shps.`id_order` IN (' . join(',', $pending_order_ids) . ')';
+      $products = Db::getInstance()->executeS($products_sql);
+
+      $group_products_by_order_id = function ($products_by_order_id, $product) {
+        $products = $products_by_order_id[$product['id_order']] ? $products_by_order_id[$product['id_order']] : array();
+        array_push($products, $product);
+        $products_by_order_id[$product['id_order']] = $products;
+        return $products_by_order_id;
+      };
+
+      $products_by_order_id = array_reduce($products, $group_products_by_order_id, array());
+
+      $map_shippify_order = function ($orders, $order) {
+        $orders[$order['id_order']] = $order['id_shippify_order'];
+        return $orders;
+      };
+      $shippify_orders = map_reduce($pending_orders, $map_shippify_order, array());
+
+      $tasks = array();
+      foreach ($pending_orders as $order) {
+        $address = $order['address1'] . ', ' . $order['city'] . ', ' . $order['postcode'];
+
+        $task = array(
+          'pickup' => array(
+            'warehouse' => $id_warehouse
+          ),
+          'deliver' => array(
+            'address' => $address
+          ),
+          'products' => $products_by_order_id[$order['id']],
+          'sender' => array(
+            'email' => $sender_support_email
+          ),
+          'recipient' => array(
+            'name' => $order['customer_name'],
+            'email' => $order['customer_email'],
+            'phonenumber' => (!empty($order['customer_phone']) ? $order['customer_phone'] : $order['customer_mobile']),
+          ),
+          'sender' => array(
+            'email' => $sender_support_email
+          ),
+          'total_amount' => $order['total_paid'],
+          'return_id' => $order['id']
+        );
+        array_push($tasks, $task);
+      }
+      $create_tasks_payload = array(
+        'tasks' => $tasks
+      );
+      $context = stream_context_create(array(
+        'http' => array(
+          'method' => 'POST',
+          'header' => "Authorization: Basic {$api_token}\r\n" .
+          "Content-Type: application/json\r\n",
+          'content' => json_encode($create_tasks_payload)
+        )
+      ));
+      $response = file_get_contents('http://testing.shippify.co/prestashop/orders/create', FALSE, $context);
+      if ($response === FALSE) return FALSE;
+      $response_data = json_decode($response, TRUE);
+      foreach ($response_data['payload']['data']['operations']['orders'] as $order) {
+        if (!$order['error']) {
+          $sql = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = 1, `task_id` = \'' . $order['taskId'] . '\' WHERE `id_order` = ' . $order['id'];
+          if (Db::getInstance()->execute($sql)) {
+            $this->confirmed_orders_by_id[$shippify_orders[$order['id']]] = $order['taskId'];
+          }
+        }
+      }
+      return TRUE;
+  	}
+  }
+
   public function performShippifyTaskCreation($id_shippify_order)
   {
     $api_token = Configuration::get('SHPY_API_TOKEN', '');
@@ -164,9 +266,6 @@ class AdminShippifyOrdersController extends ModuleAdminController
 
     $order_sql = 'SELECT ords.id_order AS id, shps.status AS shippify_order_status, ords.total_paid, CONCAT(cuts.firstname, \' \', cuts.lastname) AS customer_name, cuts.email AS customer_email, adrs.phone AS customer_phone, adrs.phone_mobile AS customer_mobile, adrs.address1, adrs.address2, adrs.postcode, adrs.city FROM `' . _DB_PREFIX_ . 'shippify_order` shps INNER JOIN `' . _DB_PREFIX_ . 'orders` ords ON shps.id_order = ords.id_order INNER JOIN `' . _DB_PREFIX_ . 'customer` cuts ON ords.id_customer = cuts.id_customer INNER JOIN `' . _DB_PREFIX_ . 'address` adrs ON ords.id_address_delivery = adrs.id_address WHERE shps.id_shippify_order = ' . $id_shippify_order;
     $order = Db::getInstance()->getRow($order_sql);
-
-    // $order_sql = 'SELECT ords.id_order AS id, shps.status AS shippify_order_status, ords.total_paid, CONCAT(cuts.firstname, \' \', cuts.lastname) AS customer_name, cuts.email AS customer_email, adrs.phone AS customer_phone, adrs.address1, adrs.address2, adrs.postcode, adrs.city FROM `' . _DB_PREFIX_ . 'shippify_order` shps INNER JOIN `' . _DB_PREFIX_ . 'orders` ords ON shps.id_order = ords.id_order INNER JOIN `' . _DB_PREFIX_ . 'customer` cuts ON ords.id_customer = cuts.id_customer INNER JOIN `' . _DB_PREFIX_ . 'address` adrs ON ords.id_address_delivery = adrs.id_address WHERE shps.id_shippify_order = ' . $id_shippify_order;
-    // $order = Db::getInstance()->getRow($order_sql);
 
     if ($order['shippify_order_status'] == 1) return TRUE;
 
@@ -181,8 +280,6 @@ class AdminShippifyOrdersController extends ModuleAdminController
           'warehouse' => $id_warehouse
         ),
         'deliver' => array(
-          // 'lat' => -19.907948,
-          // 'lng' => -43.931160,
           'address' => $address
         ),
         'products' => $products,
