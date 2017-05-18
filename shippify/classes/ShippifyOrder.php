@@ -2,7 +2,6 @@
 class ShippifyOrder extends ObjectModel {
   public $id_shippify_order;
   public $id_order;
-
   public static $definition = array(
     'table' => 'shippify_order',
     'primary' => 'id_shippify_order',
