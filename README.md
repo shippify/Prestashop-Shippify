@@ -1,6 +1,7 @@
 # Woocommerce Prestashop Plugin
 
-<img src="http://startupbrasil.org.br/wp-content/uploads/2014/12/shippify_logo_big.png" alt="Drawing" style="height: 135px; width: 522px; text-align:center;"/>
+![alt text](http://startupbrasil.org.br/wp-content/uploads/2014/12/shippify_logo_big.png =522x135 "Shippify Logo")
+
 
 - **Contributors:**  [Álvaro Ortiz](https://github.com/AJShippify), [Leonardo Kuffo](https://github.com/lkuffo/)
 - **Tags:** Shipping, delivery, shippify
