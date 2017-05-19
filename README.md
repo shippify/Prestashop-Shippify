@@ -1,53 +1,85 @@
-# Prestashop-Shippify
-Shippify's Prestashop module for easily creating tasks inside the Shippify platform.
+# Woocommerce Prestashop Plugin
 
-<p align="center"><img src="https://cloud.githubusercontent.com/assets/14082276/21063131/12ac5f0a-be22-11e6-9f13-591a527eb3c8.png" width="600"/></p>
+![alt text](http://startupbrasil.org.br/wp-content/uploads/2014/12/shippify_logo_big.png "Shippify Logo")
 
-## Installation
+**Contributors:**  [Álvaro Ortiz](https://github.com/AJShippify), [Leonardo Kuffo](https://github.com/lkuffo/)
+**Tags:** Shipping, delivery, shippify
+**Version:** 0.2
+**Compatible With:** Prestashop 1.6.x
 
-There are some ways of installing Shippify's Prestashop module:
+Deliver your Prestashop shop products in less than 24h. Integration between Prestashop and Shippify. 
 
-### Manually
+## Description ##
 
-Cloning this repo and inserting it in your host server is the preferred method for the moment.
+[Shippify](http://www.shippify.co/) is a technology company that offers their clients **Same-Day Delivery** shipping for their products. This plugin allows Prestashop store owners to use Shippify as a delivery method in their shop. 
+
+The plugin currently offers the following functionalities:
+
+- Shippify orders admin panel. 
+- Dispatch/Ship orders with shippify.
+- Bulk orders dispatch.
+- Shippify as a carrier in Checkout.
+- Shippify order tracking.
+
+## Installation ##
+
+### At Host File System: ###
 
 1. Clone this repo `git clone https://github.com/shippify/Prestashop-Shippify.git` or download it as a zip file.
 2. Drag the **shippify** folder to your host server's **modules** directory.
-3. Done.
+3. At Prestashop, go to **Modules and Services** tab.
+4. Type `Shippify` at the Modules List search box.
+5. Click on the **Install** button to install the module.
 
-## Getting started
+### At Prestashop: ###
 
-No matter how you install your module, once it resides in your modules folder it will be found in the Modules tab from your store.
+1. Clone this repo `git clone https://github.com/shippify/Prestashop-Shippify.git` or download it as a zip file.
+2. In your dashboard go to **Modules and Services** tab.
+3. In the upper right corner click on **Add new module**.
+4. Click on **Choose a File**.
+5. Select a .zip file containing the **shippify** folder.
+6. Click on **Upload This Module**.
+7. At Prestashop, go to **Modules and Services** tab.
+8. Type `Shippify` at the Modules List search box.
+9. Click on the **Install** button to install the module.
 
-![Finding shippify module](https://cloud.githubusercontent.com/assets/14082276/20902554/9bfb1c80-bb05-11e6-8b14-2a1e987a3f94.png)
+## Settings ##
 
-Once you add it to your store, Prestashop will guide you to the Configuration window. If the redirections does not occurr, click on Configure.
+#### Requirements
+##### [Shippify Account](http://shippify.co/companies#empresas-form)
+     Before you can provide shippify as a shipping method in your shop, you need an APP ID and an APP SECRET. 
 
-### Configuration
+To use the plugin correctly, the shop owner should follow these instructions to configure the settings:
 
-<p align="center"><img src="https://cloud.githubusercontent.com/assets/14082276/20902550/9be95e82-bb05-11e6-85b6-8633a58c7f9a.png" width="480" /></p>
+1. Configure Shippify API Settings: 
+    0. Go to the **Modules and Services** tab, type `Shippify` at the Modules List search box and click on the **Configure** button to access the Shippify configurations.
+    1. Enter the APP ID and the APP SECRET provided to you, as they are in the Shippify Dashboard Settings.
+    2. Enter the Warehouse ID from which you are going to dispatch your products. 
+    3. Enter an E-mail for support contact if something unexpected happened.
+    4. Select the zone for shippify to operate in.  
 
-All the fields are required to create tasks using the module.
+2. Configure Shippify on Carrier:
+    1. Go to the **Shipping** -> **Carriers** tab.
+    2. Select the Shippify Carrier.
+    3. Go to the **Shipping locations and costs** tab.
+    4.  Select the zones for shippify to operate in.
 
-- **Api Id & Secret:** Shippify issued credentials for your company.
-- **Warehouse Id:** Shippify warehouses can be created from your company's Shippify dashboard. Create one with your pickup location's address and insert it's id here. Get your warehouse ids from https://api.shippify.co/warehouse/list.
-- **Company support email:** Sometimes a little help is needed at the moment of pickup. Provide an email for support.
+3. You are ready to go! 
 
-<p align="center"><img src="https://cloud.githubusercontent.com/assets/14082276/20902546/9be0eda6-bb05-11e6-937a-849afa54c4e2.png" width="600" /></p>
+## How it works ##
 
-## Module flow
-At the moment a customer makes a purchase from your store, after going through checkout, a special Shippify order is created as well in your Prestashop store database.
+1. At the moment a customer makes a purchase from your store, a Shippify Order is created.
+2. You can manage the pending shippify orders from your Prestashop Store in the **Orders** -> **Shippify Orders** tab.
+3. Once you select an order and dispatched it (Ship!), the associated task will be created in the Shippify server and will be ready to be dispatched by our Shippers to your customers.
+4. Already dispatched orders will have a Track button, which redirects to the Shippify's task tracking page, in which you can check the order shippify status.
+5. You can further manage your tasks from your shippify dashboard.
 
-<p align="center"><img width="600" alt="screen shot 2016-12-05 at 3 09 45 pm" src="https://cloud.githubusercontent.com/assets/14082276/21063129/12abe96c-be22-11e6-8639-0e4cb9e572bd.png"></p>
+### Recomendations ###
 
-This order holds a link with a task in the Shippify's service database. You can manage the pending shippify orders from your Prestashop Store in the Orders > Shippify Orders.
+- Make tests to make sure the plugin is well configured.
+- If there is an unexpected error or malfunctioning please [report us](https://shippify.slack.com/messages/integrations).
 
-<p align="center"><img width="400" alt="screen shot 2016-12-05 at 3 15 49 pm" src="https://cloud.githubusercontent.com/assets/14082276/20902551/9bf4afb2-bb05-11e6-8598-75e808c82084.png"></p>
+## Comming Soon ##
 
-Once you select an order and Ship It!!!, the associated task will be created in the Shippify server and will be ready to be dispatched by our Shippers to your customers.
+- Multiple Warehouses support. 
 
-<p align="center"><img width="600" alt="screen shot 2016-12-05 at 3 10 37 pm" src="https://cloud.githubusercontent.com/assets/14082276/21063130/12ac4c54-be22-11e6-9152-6acc1c78589b.png"></p>
-
-Already confirmed orders will have instead a Track button, which redirects to the Shippify's task tracking page.
-
-You can further manage your tasks from your shippify dashboard in https://admin.shippify.co.
