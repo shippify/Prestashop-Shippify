@@ -274,6 +274,12 @@ class AdminShippifyOrdersController extends ModuleAdminController
     // Update confirmed orders if SQL is successful
     if (Db::getInstance()->execute($sql)) {
       $this->confirmed_orders_by_id[$id_shippify_order] = $response_data['id'];
+
+      // Change order status to Shipped
+      $objOrder = new Order((int)$order['id']);
+      $history = new OrderHistory();
+      $history->id_order = (int)$objOrder->id;
+      $history->changeIdOrderState(4, (int)($objOrder->id));
       return TRUE;
     }
     return FALSE;
