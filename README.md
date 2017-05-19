@@ -2,14 +2,14 @@
 
 ![alt text](http://startupbrasil.org.br/wp-content/uploads/2014/12/shippify_logo_big.png "Shippify Logo")
 
+Deliver your Prestashop shop products in less than 24h. Integration between Prestashop and Shippify. 
+
+## Description ##
+
 **Contributors:**  [Álvaro Ortiz](https://github.com/AJShippify), [Leonardo Kuffo](https://github.com/lkuffo/)
 **Tags:** Shipping, delivery, shippify
 **Version:** 0.2
 **Compatible With:** Prestashop 1.6.x
-
-Deliver your Prestashop shop products in less than 24h. Integration between Prestashop and Shippify. 
-
-## Description ##
 
 [Shippify](http://www.shippify.co/) is a technology company that offers their clients **Same-Day Delivery** shipping for their products. This plugin allows Prestashop store owners to use Shippify as a delivery method in their shop. 
 
