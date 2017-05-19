@@ -122,6 +122,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
     // Add action buttons
     $this->addRowAction('shippify');
 
+
     // Get the dispatched orders
     $confirmed_orders_sql = "select id_shippify_order, task_id from `" . _DB_PREFIX_ . "shippify_order` where task_id is not null";
     $confirmed_orders = Db::getInstance()->executeS($confirmed_orders_sql);
@@ -132,15 +133,30 @@ class AdminShippifyOrdersController extends ModuleAdminController
     $confirmed_orders_by_id = array_reduce($confirmed_orders, $get_id_from_order, array());
     $this->confirmed_orders_by_id = $confirmed_orders_by_id;
 
+    
+
     parent::__construct();
 
+    $this->actions_available[] = 'shippify';
+
     $this->bulk_actions = array(
-      'delete' => array(
-          'text'    => $this->l('Delete selected'),
-          'icon'    => 'icon-trash',
-          'confirm' => $this->l('Delete selected items?'),
+      'shippify' => array(
+          'text'    => $this->l('Dispacth Selected'),
+          'icon'    => 'icon-truck',
+          'confirm' => $this->l('Dispatch all of selected items?'),
       ),
     );
+
+
+
+  }
+
+  protected function processBulkShippify(){
+
+    foreach ($this->boxes as $id) {
+      $this->performShippifyTaskCreation($id);
+    }
+
   }
 
   /**
@@ -233,7 +249,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
           'email' => $sender_support_email
         ),
         'total_amount' => $order['total_paid'],
-        'return_id' => $order['id']
+        'ref_id' => $order['id']
       )
     );
     // Authentication
