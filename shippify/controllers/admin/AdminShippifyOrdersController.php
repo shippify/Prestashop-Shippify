@@ -1,18 +1,19 @@
 <?php
 class AdminShippifyOrdersController extends ModuleAdminController
 {
+
+  /*
+   * Constructor Method
+   */
   public function __construct()
   {
 
     $this->table = 'shippify_order';
-    // Model name
     $this->className = 'ShippifyOrder';
     $this->bootstrap = true;
 
     $this->lang = false;
     $this->explicitSelect = true;
-    // $this->allow_export = true;
-    // $this->deleted = false;
     $this->context = Context::getContext();
 
     $this->_select =  '
@@ -42,7 +43,6 @@ class AdminShippifyOrdersController extends ModuleAdminController
 
     $this->_orderBy = 'ords.date_add';
     $this->_orderWay = 'DESC';
-    // $this->_use_found_rows = true;
 
     $statuses = OrderState::getOrderStates((int)$this->context->language->id);
     foreach ($statuses as $status) {
@@ -52,7 +52,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
     // Database fields to show in the table
     $this->fields_list = array(
       'id_shippify_order' => array(
-        'title' => $this->l('Shippify Order ID'),
+        'title' => $this->l(''),
         'filter_key' => 'a!id_shippify_order'
       ),
       'id' => array(
@@ -62,7 +62,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
         'filter_key' => 'ords!id_order'
       ),
       'task_id' => array(
-        'title' => $this->l('Task ID')
+        'title' => $this->l('Track #')
       ),
       'shippify_status' => array(
         'title' => $this->l('Shippify Status'),
@@ -93,14 +93,6 @@ class AdminShippifyOrdersController extends ModuleAdminController
         'align' => 'left',
         'havingFilter' => true,
         'filter_key' => 'zone!name',
-      ),
-      'phone' => array(
-        'title' => $this->l('Phone'),
-        'havingFilter' => true,
-      ),
-      'phone_mobile' => array(
-        'title' => $this->l('Mobile'),
-        'havingFilter' => true,
       ),
       'osname' => array(
         'title' => $this->l('Order Status'),
@@ -134,11 +126,10 @@ class AdminShippifyOrdersController extends ModuleAdminController
     $this->confirmed_orders_by_id = $confirmed_orders_by_id;
 
     
-
     parent::__construct();
 
+    // Bulk Action
     $this->actions_available[] = 'shippify';
-
     $this->bulk_actions = array(
       'shippify' => array(
           'text'    => $this->l('Dispacth Selected'),
@@ -146,9 +137,6 @@ class AdminShippifyOrdersController extends ModuleAdminController
           'confirm' => $this->l('Dispatch all of selected items?'),
       ),
     );
-
-
-
   }
 
   protected function processBulkShippify(){

@@ -1,4 +1,4 @@
-# Woocommerce Prestashop Plugin
+# Woocommerce Prestashop Module
 
 <img src="http://startupbrasil.org.br/wp-content/uploads/2014/12/shippify_logo_big.png" alt="Drawing" style="max-height: 135px; max-width: 522px; text-align:center;"/>
 
@@ -11,9 +11,9 @@ Deliver your Prestashop shop products in less than 24h. Integration between Pres
 
 ## Description ##
 
-[Shippify](http://www.shippify.co/) is a technology company that offers their clients **Same-Day Delivery** shipping for their products. This plugin allows Prestashop store owners to use Shippify as a delivery method in their shop. 
+[Shippify](http://www.shippify.co/) is a technology company that offers their clients **Same-Day Delivery** shipping for their products. This module allows Prestashop store owners to use Shippify as a delivery method in their shop. 
 
-The plugin currently offers the following functionalities:
+The module currently offers the following functionalities:
 
 - Shippify orders admin panel. 
 - Dispatch/Ship orders with shippify.
@@ -43,13 +43,15 @@ The plugin currently offers the following functionalities:
 8. Type `Shippify` at the Modules List search box.
 9. Click on the **Install** button to install the module.
 
+![Finding shippify module](https://cloud.githubusercontent.com/assets/14082276/20902554/9bfb1c80-bb05-11e6-8b14-2a1e987a3f94.png)
+
 ## Settings ##
 
 #### Requirements
 ##### [Shippify Account](http://shippify.co/companies#empresas-form)
      Before you can provide shippify as a shipping method in your shop, you need an APP ID and an APP SECRET. 
 
-To use the plugin correctly, the shop owner should follow these instructions to configure the settings:
+To use the module correctly, the shop owner should follow these instructions to configure the settings:
 
 1. Configure Shippify API Settings: 
     0. Go to the **Modules and Services** tab, type `Shippify` at the Modules List search box and click on the **Configure** button to access the Shippify configurations.
@@ -76,10 +78,20 @@ To use the plugin correctly, the shop owner should follow these instructions to 
 
 ### Recomendations ###
 
-- Make tests to make sure the plugin is well configured.
+- Make tests to make sure the module is well configured.
 - If there is an unexpected error or malfunctioning please [report us](https://shippify.slack.com/messages/integrations).
 
 ## Comming Soon ##
 
 - Multiple Warehouses support. 
 
+## Screenshots ##
+
+### Shippify Orders Tab: ###
+<p align="center"><img width="400" alt="screen shot 2016-12-05 at 3 15 49 pm" src="https://cloud.githubusercontent.com/assets/14082276/20902551/9bf4afb2-bb05-11e6-8598-75e808c82084.png"></p>
+
+### Shippify Orders Admin Panel: ###
+<p align="center"><img width="600" alt="screen shot 2016-12-05 at 3 10 37 pm" src="https://cloud.githubusercontent.com/assets/14082276/21063130/12ac4c54-be22-11e6-9152-6acc1c78589b.png"></p>
+
+### Module Configurations: ###
+<p align="center"><img src="https://cloud.githubusercontent.com/assets/14082276/20902546/9be0eda6-bb05-11e6-937a-849afa54c4e2.png" width="600" /></p>
