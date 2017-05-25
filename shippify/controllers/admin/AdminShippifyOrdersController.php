@@ -40,7 +40,6 @@ class AdminShippifyOrdersController extends ModuleAdminController
     LEFT JOIN `'._DB_PREFIX_.'carrier` AS transporte ON (transporte.`id_carrier` = ords.`id_carrier`)
     LEFT JOIN `'._DB_PREFIX_.'order_state_lang` osl ON (os.`id_order_state` = osl.`id_order_state` AND osl.`id_lang` = '.(int)$this->context->language->id.')';
 
-
     $this->_orderBy = 'ords.date_add';
     $this->_orderWay = 'DESC';
 
@@ -198,7 +197,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
     if (empty($sender_support_email)) return FALSE;
 
     // Get the order info from the database
-    $order_sql = 'SELECT ords.id_order AS id, shps.status AS shippify_order_status, ords.total_paid, CONCAT(cuts.firstname, \' \', cuts.lastname) AS customer_name, cuts.email AS customer_email, adrs.phone AS customer_phone, adrs.phone_mobile AS customer_mobile, adrs.address1, adrs.address2, adrs.postcode, adrs.city FROM `' . _DB_PREFIX_ . 'shippify_order` shps INNER JOIN `' . _DB_PREFIX_ . 'orders` ords ON shps.id_order = ords.id_order INNER JOIN `' . _DB_PREFIX_ . 'customer` cuts ON ords.id_customer = cuts.id_customer INNER JOIN `' . _DB_PREFIX_ . 'address` adrs ON ords.id_address_delivery = adrs.id_address WHERE shps.id_shippify_order = ' . $id_shippify_order;
+    $order_sql = 'SELECT ords.id_order AS id, ords.reference AS ref, shps.status AS shippify_order_status, ords.total_paid, CONCAT(cuts.firstname, \' \', cuts.lastname) AS customer_name, cuts.email AS customer_email, adrs.phone AS customer_phone, adrs.phone_mobile AS customer_mobile, adrs.address1, adrs.address2, adrs.postcode, adrs.city FROM `' . _DB_PREFIX_ . 'shippify_order` shps INNER JOIN `' . _DB_PREFIX_ . 'orders` ords ON shps.id_order = ords.id_order INNER JOIN `' . _DB_PREFIX_ . 'customer` cuts ON ords.id_customer = cuts.id_customer INNER JOIN `' . _DB_PREFIX_ . 'address` adrs ON ords.id_address_delivery = adrs.id_address WHERE shps.id_shippify_order = ' . $id_shippify_order;
     $order = Db::getInstance()->getRow($order_sql);
 
     // If the order has already been shipped
@@ -237,7 +236,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
           'email' => $sender_support_email
         ),
         'total_amount' => $order['total_paid'],
-        'ref_id' => $order['id']
+        'ref_id' => $order['ref']
       )
     );
     // Authentication
