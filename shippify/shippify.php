@@ -157,10 +157,6 @@ class Shippify extends Module
     $available_zones_sql = 'select *, (id_zone = \'' . $selected_zone_id . '\') as selected from `' . _DB_PREFIX_ . 'zone`';
     $available_zones = Db::getInstance()->executeS($available_zones_sql);
     $this->context->smarty->assign('available_zones', $available_zones);
-    // MAYBE THE ZONE FIX IS IN HERE // /// // / // / / 
-    /// // /
-    /// // /
-    ////////
     $this->context->smarty->assign('selected_zone_id', $selected_zone_id);
   }
 
@@ -301,10 +297,6 @@ class Shippify extends Module
         $operating_zone = (strcmp($operating_zone, '-1') != 0) ? $operating_zone : '';
         if (Configuration::updateValue('SHPY_ZONE', $operating_zone)) {
           $this->context->smarty->assign('success_zone', $this->l('Shippify operating zone has been updated.'));
-          // IN HERE YOU HAVE TO FIX
-          //  FIX
-          //  -------- ADD ZONE TO SELECTED ZONES -------
-          //                                          FIX
         } else {
           $this->context->smarty->assign('failure_zone', $this->l('Shippify operating zone could not be updated.'));
         }

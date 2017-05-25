@@ -19,7 +19,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
     $this->_select =  '
     UPPER(case a.status when 0 then "NOT CREATED" when 1 then "CREATED" end) AS shippify_status,
     a.id_order AS id,
-    ords.id_currency,
+    ords.id_currency, ords.reference AS ref,
     ords.id_order AS id_pdf,
     CONCAT(c.`firstname`, \' \', c.`lastname`) AS `customer`,
     osl.`name` AS `osname`,
@@ -54,7 +54,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
         'title' => $this->l(''),
         'filter_key' => 'a!id_shippify_order'
       ),
-      'id' => array(
+      'ref' => array(
         'title' => $this->l('ID'),
         'align' => 'text-center',
         'class' => 'fixed-width-xs',
