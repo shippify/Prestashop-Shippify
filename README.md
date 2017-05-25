@@ -18,6 +18,7 @@ The module currently offers the following functionalities:
 - Shippify orders admin panel. 
 - Dispatch/Ship orders with shippify.
 - Bulk orders dispatch.
+- Bulk orders drafts creation.
 - Shippify as a carrier in Checkout.
 - Shippify order tracking.
 
@@ -70,7 +71,7 @@ To use the module correctly, the shop owner should follow these instructions to 
 
 ## How it works ##
 
-1. At the moment a customer makes a purchase from your store, a Shippify Order is created.
+1. At the moment a customer makes a purchase from your store, a Shippify Order is created. If the order is not processed, you will have to create the Shippify Order manually. You may do this one-by-one by accessing the order detail and click on **Confirm Shipment**, or in bulk (**Create Shippify Draft**).
 2. You can manage the pending shippify orders from your Prestashop Store in the **Orders** -> **Shippify Orders** tab.
 3. Once you select an order and dispatched it (Ship!), the associated task will be created in the Shippify server and will be ready to be dispatched by our Shippers to your customers.
 4. Already dispatched orders will have a Track button, which redirects to the Shippify's task tracking page, in which you can check the order shippify status.

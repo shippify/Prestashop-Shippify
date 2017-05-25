@@ -22,8 +22,8 @@ class Shippify extends Module
   {
     $this->name = 'shippify';
     $this->tab = 'shipping_logistics';
-    $this->version = '0.1';
-    $this->author = 'Álvaro Ortiz';
+    $this->version = '0.3';
+    $this->author = 'Álvaro Ortiz & Leonardo Kuffo';
     $this->bootstrap = true;
     parent::__construct();
     $this->displayName = $this->l('Shippify');
