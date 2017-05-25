@@ -1,4 +1,4 @@
-# Woocommerce Prestashop Module
+# Prestashop Shippify Module
 
 <img src="http://startupbrasil.org.br/wp-content/uploads/2014/12/shippify_logo_big.png" alt="Drawing" style="max-height: 135px; max-width: 522px; text-align:center;"/>
 
