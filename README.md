@@ -4,7 +4,7 @@
 
 - **Contributors:**  [Álvaro Ortiz](https://github.com/AJShippify), [Leonardo Kuffo](https://github.com/lkuffo/)
 - **Tags:** Shipping, delivery, shippify
-- **Version:** 0.2
+- **Version:** 0.3
 - **Compatible With:** Prestashop 1.6.x
 
 Deliver your Prestashop shop products in less than 24h. Integration between Prestashop and Shippify. 
