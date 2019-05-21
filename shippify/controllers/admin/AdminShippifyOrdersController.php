@@ -216,30 +216,32 @@ class AdminShippifyOrdersController extends ModuleAdminController
     // Prepare the request
     $post_data = array(
       'deliveries' => array(
-        'pickup' => array(
-          'contact' => array(
-            'email' => $sender_support_email,
-            'phone' => $sender_support_phone
+        array(
+          'pickup' => array(
+            'contact' => array(
+              'email' => $sender_support_email,
+              'phone' => $sender_support_phone
+            ),
+            'location' => array(
+              'warehouse' => $id_warehouse
+            )
           ),
-          'location' => array(
-            'warehouse' => $id_warehouse
-          )
-        ),
-        'dropoff' => array(
-          'contact' => array(
-            'name' => $order['customer_name'],
-            'email' => $order['customer_email'],
-            'phonenumber' => (!empty($order['customer_phone']) ? $order['customer_phone'] : $order['customer_mobile']),
+          'dropoff' => array(
+            'contact' => array(
+              'name' => $order['customer_name'],
+              'email' => $order['customer_email'],
+              'phonenumber' => (!empty($order['customer_phone']) ? $order['customer_phone'] : $order['customer_mobile']),
+            ),
+            'location' => array(
+              'address' => $address
+            )
           ),
-          'location' => array(
-            'address' => $address
+          'packages' => $products,
+          'total_amount' => $order['total_paid'],
+          'referenceId' => $order['ref'], 
+          'tags' => array(
+            'PRESTASHOP'
           )
-        ),
-        'packages' => $products,
-        'total_amount' => $order['total_paid'],
-        'referenceId' => $order['ref'], 
-        'tags' => array(
-          'PRESTASHOP'
         )
       )
     );
@@ -259,12 +261,11 @@ class AdminShippifyOrdersController extends ModuleAdminController
     // If error, nothing happens
     if ($response === FALSE) return FALSE;
     $response_data = json_decode($response, TRUE);
-
     // Order has been created, status is set to 1
-    $sql = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = 1, `task_id` = \'' . $response_data['id'] . '\' WHERE `id_shippify_order` = ' . $id_shippify_order;
+    $sql = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = 1, `task_id` = \'' . $response_data['payload'][0]['id'] . '\' WHERE `id_shippify_order` = ' . $id_shippify_order;
     // Update confirmed orders if SQL is successful
     if (Db::getInstance()->execute($sql)) {
-      $this->confirmed_orders_by_id[$id_shippify_order] = $response_data['id'];
+      $this->confirmed_orders_by_id[$id_shippify_order] = $response_data['payload'][0]['id'];
 
       // Change order status to Shipped
       $objOrder = new Order((int)$order['id']);

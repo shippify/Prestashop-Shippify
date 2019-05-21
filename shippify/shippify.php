@@ -22,7 +22,7 @@ class Shippify extends Module
   {
     $this->name = 'shippify';
     $this->tab = 'shipping_logistics';
-    $this->version = '0.3';
+    $this->version = '0.4';
     $this->author = 'Álvaro Ortiz & Leonardo Kuffo';
     $this->bootstrap = true;
     parent::__construct();
@@ -75,7 +75,7 @@ class Shippify extends Module
    *
    */
   public function createShippifyOrdersTable() {
-    $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'shippify_order` (`id_shippify_order` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `id_order` INT(11) NOT NULL, `status` TINYINT(1) NOT NULL DEFAULT 0, `task_id` VARCHAR(20) DEFAULT NULL)';
+    $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'shippify_order` (`id_shippify_order` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `id_order` INT(11) NOT NULL, `status` TINYINT(1) NOT NULL DEFAULT 0, `readable_status` VARCHAR(40) DEFAULT "processing", `task_id` VARCHAR(20) DEFAULT NULL)';
     return Db::getInstance()->execute($sql);
   }
 
