@@ -46,6 +46,20 @@
           <div class="alert alert-danger">{$failure_email}</div>
         {/if}
       </div>
+
+      <div class="form-group clearfix">
+        <label class="col-lg-3">{l s='Insert a phone number for pickup contact support.' mod='shippify'}</label>
+        <div class="col-lg-9">
+          <input type="text" id="shpy__configuration__support-phone__input" name="sender-support-phone" {if isset($sender_support_phone)}value="{$sender_support_phone}"{/if} placeholder="E.g. +592992476224"/>
+        </div>
+        {if isset($success_phone)}
+          <div class="alert alert-success">{$success_phone}</div>
+        {/if}
+        {if isset($failure_phone)}
+          <div class="alert alert-danger">{$failure_phone}</div>
+        {/if}
+      </div>
+
       <div class="form-group clearfix">
         <label class="col-lg-3">{l s='Select a zone for shippify to operate in.' mod='shippify'}</label>
         <div class="col-lg-9">

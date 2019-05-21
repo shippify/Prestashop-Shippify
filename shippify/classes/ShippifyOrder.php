@@ -9,7 +9,7 @@ class ShippifyOrder extends ObjectModel {
     'fields' => array(
       'id_shippify_order' => array('type' => self::TYPE_INT, 'required' => true),
       'id_order' => array('type' => self::TYPE_INT, 'required' => true),
-      'status' => array('type' => self::TYPE_INT, 'required' => true),
+      'status' => array('type' => self::TYPE_INT, 'required' => true)
     )
   );
 }
