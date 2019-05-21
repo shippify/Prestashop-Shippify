@@ -118,6 +118,7 @@ class Shippify extends Module
       Configuration::deleteByName('SHPY_API_TOKEN') &&
       Configuration::deleteByName('SHPY_WAREHOUSE_ID') &&
       Configuration::deleteByName('SHPY_SUPPORT_EMAIL') &&
+      Configuration::deleteByName('SHPY_SUPPORT_PHONE') &&
       Configuration::deleteByName('SHPY_ZONE')
     ) {
       return TRUE;
@@ -153,6 +154,9 @@ class Shippify extends Module
     $sender_support_email = Configuration::get('SHPY_SUPPORT_EMAIL', '');
     $this->context->smarty->assign('sender_support_email', $sender_support_email);
 
+    $sender_support_email = Configuration::get('SHPY_SUPPORT_PHONE', '');
+    $this->context->smarty->assign('sender_support_phone', $sender_support_email);
+
     $selected_zone_id = Configuration::get('SHPY_ZONE', '-1');
     $available_zones_sql = 'select *, (id_zone = \'' . $selected_zone_id . '\') as selected from `' . _DB_PREFIX_ . 'zone`';
     $available_zones = Db::getInstance()->executeS($available_zones_sql);
@@ -176,6 +180,7 @@ class Shippify extends Module
       list($current_api_id, $current_api_secret) = explode(':', base64_decode($current_api_token));
       $current_id_warehouse = Configuration::get('SHPY_WAREHOUSE_ID', '');
       $current_sender_support_email = Configuration::get('SHPY_SUPPORT_EMAIL', '');
+      $current_sender_support_phone = Configuration::get('SHPY_SUPPORT_PHONE', '');
       $current_operating_zone = Configuration::get('SHPY_ZONE', '');
 
       // Get NEW values
@@ -183,18 +188,21 @@ class Shippify extends Module
       $api_secret = Tools::getValue('api-secret');
       $id_warehouse = Tools::getValue('warehouse-id');
       $sender_support_email = Tools::getValue('sender-support-email');
+      $sender_support_phone = Tools::getValue('sender-support-phone');
       $operating_zone = Tools::getValue('operating-zone');
 
       // Obtain which one of them have changed
       $have_credentials_changed = strcmp($current_api_id, $api_id) != 0 || strcmp($current_api_secret, $api_secret) != 0;
       $has_id_warehouse_changed = strcmp($current_id_warehouse, $id_warehouse) != 0;
       $has_support_email_changed = strcmp($current_sender_support_email, $sender_support_email) != 0;
+      $has_support_phone_changed = strcmp($current_sender_support_email, $sender_support_email) != 0;
       $has_operating_zone_changed = strcmp($current_operating_zone, $operating_zone) != 0;
 
       // Check which one of them is missing
       $should_update_credentials = empty($current_api_token) || $have_credentials_changed;
       $should_update_id_warehouse = empty($current_id_warehouse) || $have_credentials_changed || $has_id_warehouse_changed;
       $should_update_support_email = empty($current_sender_support_email) || $has_support_email_changed;
+      $should_update_support_phone = empty($current_sender_support_phone) || $has_support_phone_changed;
       $should_update_operating_zone = $has_operating_zone_changed;
 
 
@@ -290,6 +298,16 @@ class Shippify extends Module
           $this->context->smarty->assign('success_email', $this->l('Shippify support email has been updated.'));
         } else {
           $this->context->smarty->assign('failure_email', $this->l('Shippify support email could not be updated.'));
+        }
+      }
+
+      if ($should_update_support_phone) {
+        if (empty($sender_support_phone)) {
+          $this->context->smarty->assign('failure_phone', $this->l('Must have a phone as pickup contact.'));
+        } else if (Configuration::updateValue('SHPY_SUPPORT_PHONE', $sender_support_phone)) {
+          $this->context->smarty->assign('success_phone', $this->l('Shippify support phone has been updated.'));
+        } else {
+          $this->context->smarty->assign('failure_phone', $this->l('Shippify support phone could not be updated.'));
         }
       }
 
