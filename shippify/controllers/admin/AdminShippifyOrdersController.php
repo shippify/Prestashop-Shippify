@@ -63,7 +63,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
       'task_id' => array(
         'title' => $this->l('Track #')
       ),
-      'shippify_status' => array(
+      'readable_status' => array(
         'title' => $this->l('Shippify Status'),
         // 'type' => 'select',
         'color' => 'color',
@@ -71,7 +71,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
         //   '0' => 'Not created',
         //   '1' => 'Created'
         // ),
-        'filter_key' => 'a!shippify_status'
+        'filter_key' => 'a!readable_status'
       ),
       'customer' => array(
         'title' => $this->l('Customer'),
@@ -121,6 +121,40 @@ class AdminShippifyOrdersController extends ModuleAdminController
       $order_ids[$order['id_shippify_order']] = $order['task_id'];
       return $order_ids;
     };
+
+    // Update orders status on request
+    $update_order_status = function($orders_ids, $order){
+      $api_token = Configuration::get('SHPY_API_TOKEN', '');
+      $task_id = $order['task_id'];
+
+      $context = stream_context_create(array(
+        'http' => array(
+          'method' => 'GET',
+          'header' => "Authorization: Basic {$api_token}\r\n" .
+          "Content-Type: application/json\r\n"
+        )
+      ));
+
+      $response = file_get_contents('https://api.shippify.co/v1/deliveries/' . $task_id .'/complete', FALSE, $context);
+
+      if ($response === FALSE) return 1;
+      $response_data = json_decode($response, TRUE);
+
+      $response_readable_status = $response_data['_status'];
+      $response_status = $response_data['status'];
+
+      $update_status_query = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = '. $response_status . ' , `readable_status` = \'' . $response_readable_status . '\' WHERE `task_id` = \'' . $task_id . '\'';
+
+      if (Db::getInstance()->execute($update_status_query)) {
+        return 0;
+      }
+      return 1;
+    };
+
+
+
+    array_reduce($confirmed_orders, $update_order_status);
+
     $confirmed_orders_by_id = array_reduce($confirmed_orders, $get_id_from_order, array());
     $this->confirmed_orders_by_id = $confirmed_orders_by_id;
 

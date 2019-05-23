@@ -75,7 +75,7 @@ class Shippify extends Module
    *
    */
   public function createShippifyOrdersTable() {
-    $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'shippify_order` (`id_shippify_order` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `id_order` INT(11) NOT NULL, `status` TINYINT(1) NOT NULL DEFAULT 0, `readable_status` VARCHAR(40) DEFAULT "processing", `task_id` VARCHAR(20) DEFAULT NULL)';
+    $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'shippify_order` (`id_shippify_order` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `id_order` INT(11) NOT NULL, `status` TINYINT(1) NOT NULL DEFAULT 0, `readable_status` VARCHAR(40) DEFAULT "NOT CREATED", `task_id` VARCHAR(20) DEFAULT NULL)';
     return Db::getInstance()->execute($sql);
   }
 
@@ -240,6 +240,8 @@ class Shippify extends Module
 
           $is_id_warehouse_valid = $status == 200;
 
+          
+          
           if ($is_server_down) {
             $this->context->smarty->assign('failure_credentials', $this->l('Shippify servers are down for the moment.'));
           } else if ($should_update_credentials) {
