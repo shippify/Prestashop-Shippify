@@ -122,39 +122,42 @@ class AdminShippifyOrdersController extends ModuleAdminController
       return $order_ids;
     };
 
-    // Update orders status on request
-    $update_order_status = function($orders_ids, $order){
-      $api_token = Configuration::get('SHPY_API_TOKEN', '');
-      $task_id = $order['task_id'];
 
-      $context = stream_context_create(array(
-        'http' => array(
-          'method' => 'GET',
-          'header' => "Authorization: Basic {$api_token}\r\n" .
-          "Content-Type: application/json\r\n"
-        )
-      ));
-
-      $response = file_get_contents('https://api.shippify.co/v1/deliveries/' . $task_id .'/complete', FALSE, $context);
-
-      if ($response === FALSE) return 1;
-      $response_data = json_decode($response, TRUE);
-
-      $response_readable_status = $response_data['_status'];
-      $response_status = $response_data['status'];
-
-      $update_status_query = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = '. $response_status . ' , `readable_status` = \'' . $response_readable_status . '\' WHERE `task_id` = \'' . $task_id . '\'';
-
-      if (Db::getInstance()->execute($update_status_query)) {
-        return 0;
-      }
-      return 1;
+    $get_tasks_ids = function($order){
+      return $order['task_id'];
     };
 
+    $shippify_tasks_ids = array_map($get_tasks_ids, $confirmed_orders);
+    $joined_tasks_ids = implode(",", $shippify_tasks_ids);
+    $api_token = Configuration::get('SHPY_API_TOKEN', '');
 
+    $context = stream_context_create(array(
+      'http' => array(
+        'method' => 'GET',
+        'header' => "Authorization: Basic {$api_token}\r\n" .
+        "Content-Type: application/json\r\n"
+      )
+    ));
 
-    array_reduce($confirmed_orders, $update_order_status);
+    $test = 'https://api.shippify.co/v1/prestashop/orders/statuses/?ids=' . $joined_tasks_ids;
+    
+    // get all orders status
+    $response = file_get_contents('https://api.shippify.co/v1/prestashop/orders/statuses/?ids=' . $joined_tasks_ids, FALSE, $context);
 
+    $response_data = json_decode($response, TRUE);
+    if ($response_data["code"] !== "ERROR"){
+      $all_statuses = $response_data['data']['statuses'];
+
+      foreach ($all_statuses as $single_status) {
+        $task_id = $single_status['id'];
+        $response_readable_status = $single_status['_status'];
+        $response_status = $single_status['state'];
+    
+        $update_status_query = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = '. $response_status . ' , `readable_status` = \'' . $response_readable_status . '\' WHERE `task_id` = \'' . $task_id . '\'';
+    
+        Db::getInstance()->execute($update_status_query);
+      }
+    }
     $confirmed_orders_by_id = array_reduce($confirmed_orders, $get_id_from_order, array());
     $this->confirmed_orders_by_id = $confirmed_orders_by_id;
 
@@ -195,9 +198,11 @@ class AdminShippifyOrdersController extends ModuleAdminController
 
     // Assing action to the template 
     $tpl->assign(array(
-      'href' => $order_is_confirmed ? ('https://admin.shippify.co/track/' . $this->confirmed_orders_by_id[$id])  : (self::$currentIndex.'&token='.$this->token.'&
+      'href' => $order_is_confirmed ? ('https://api.shippify.co/track/' . $this->confirmed_orders_by_id[$id])  : (self::$currentIndex.'&token='.$this->token.'&
       '.$this->identifier.'='.$id.'&shipit'.$this->table.'=1'),
-      'action' => $this->l($order_is_confirmed ? 'Track' : 'Ship!')
+      'action' => $this->l($order_is_confirmed ? 'Rastreo' : 'Despachar con Shippify'),
+      'href_detail' => $order_is_confirmed ? ('https://dash.shippify.co/routes/' . $this->confirmed_orders_by_id[$id]) : '',
+      'action_detail' => 'Más información'
     ));
     return $tpl->fetch();
   }
@@ -272,7 +277,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
           ),
           'packages' => $products,
           'total_amount' => $order['total_paid'],
-          'referenceId' => $order['ref'], 
+          'referenceId' => $order['id'] . ' - ' . $order['ref'], 
           'tags' => array(
             'PRESTASHOP'
           )

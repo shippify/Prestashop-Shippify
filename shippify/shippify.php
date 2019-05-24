@@ -238,10 +238,8 @@ class Shippify extends Module
 
           $are_credentials_valid = $status != 401;
 
-          $is_id_warehouse_valid = $status == 200;
-
-          
-          
+          $is_id_warehouse_valid = (200 <= $status) && ($status < 400);
+      
           if ($is_server_down) {
             $this->context->smarty->assign('failure_credentials', $this->l('Shippify servers are down for the moment.'));
           } else if ($should_update_credentials) {
