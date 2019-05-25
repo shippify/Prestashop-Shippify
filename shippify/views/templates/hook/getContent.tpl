@@ -61,6 +61,40 @@
       </div>
 
       <div class="form-group clearfix">
+        <label class="col-lg-3">{l s='¿Desea anonimizar el nombre de los productos comprados?' mod='shippify'}</label>
+        <div class="col-lg-9">
+          <select id="shpy__configuration__operating-anonimize__input" name="anonimize_products" value="{$anonimize_products}">
+            <option value="-1">{l s='Selecciona una opción' mod='shippify'}</h3>
+              <option value="SI"{if $anonimize_products == 'SI' } selected{/if}>SI</h3>
+              <option value="NO"{if $anonimize_products == 'NO' } selected{/if}>NO</h3>
+          </select>
+        </div>
+        {if isset($success_anonimize_products)}
+          <div class="alert alert-success">{$success_anonimize_products}</div>
+        {/if}
+        {if isset($failure_anonimize_products)}
+          <div class="alert alert-danger">{$failure_anonimize_products}</div>
+        {/if}
+      </div>
+
+      <div class="form-group clearfix">
+        <label class="col-lg-3">{l s='¿Desea compactar los nombres de los productos comprados en una sola etiqueta?' mod='shippify'}</label>
+        <div class="col-lg-9">
+          <select id="shpy__configuration__operating-compact__input" name="compact_products" value="{$compact_products}">
+            <option value="-1">{l s='Selecciona una opción' mod='shippify'}</h3>
+              <option value="SI"{if $compact_products == 'SI' } selected{/if}>SI</h3>
+              <option value="NO"{if $compact_products == 'NO' } selected{/if}>NO</h3>
+          </select>
+        </div>
+        {if isset($success_compact_products)}
+          <div class="alert alert-success">{$success_compact_products}</div>
+        {/if}
+        {if isset($failure_compact_products)}
+          <div class="alert alert-danger">{$failure_compact_products}</div>
+        {/if}
+      </div>
+
+      <div class="form-group clearfix">
         <label class="col-lg-3">{l s='Select a zone for shippify to operate in.' mod='shippify'}</label>
         <div class="col-lg-9">
           <select id="shpy__configuration__operating-zone__input" name="operating-zone" value="{$selected_zone_id}">
