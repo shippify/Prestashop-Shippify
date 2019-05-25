@@ -231,26 +231,46 @@ class AdminShippifyOrdersController extends ModuleAdminController
     $id_warehouse = Configuration::get('SHPY_WAREHOUSE_ID', '');
     $sender_support_email = Configuration::get('SHPY_SUPPORT_EMAIL', '');
     $sender_support_phone = Configuration::get('SHPY_SUPPORT_PHONE', '');
+    $compact_products = Configuration::get('SHPY_COMPACT_PRODUCTS', '');
+    $anonimize_products = Configuration::get('SHPY_ANONIMIZE_PRODUCTS', '');
     // If one of them is empty, dont do nothing
     if (empty($api_token)) return FALSE;
     if (empty($id_warehouse)) return FALSE;
     if (empty($sender_support_email)) return FALSE;
 
     // Get the order info from the database
-    $order_sql = 'SELECT ords.id_order AS id, ords.reference AS ref, shps.status AS shippify_order_status, ords.total_paid, CONCAT(cuts.firstname, \' \', cuts.lastname) AS customer_name, cuts.email AS customer_email, adrs.phone AS customer_phone, adrs.phone_mobile AS customer_mobile, adrs.address1, adrs.address2, adrs.postcode, adrs.city FROM `' . _DB_PREFIX_ . 'shippify_order` shps INNER JOIN `' . _DB_PREFIX_ . 'orders` ords ON shps.id_order = ords.id_order INNER JOIN `' . _DB_PREFIX_ . 'customer` cuts ON ords.id_customer = cuts.id_customer INNER JOIN `' . _DB_PREFIX_ . 'address` adrs ON ords.id_address_delivery = adrs.id_address WHERE shps.id_shippify_order = ' . $id_shippify_order;
+    $order_sql = 'SELECT *, ords.id_order AS id, ords.reference AS ref, shps.status AS shippify_order_status, ords.total_paid, CONCAT(cuts.firstname, \' \', cuts.lastname) AS customer_name, cuts.email AS customer_email, adrs.phone AS customer_phone, adrs.phone_mobile AS customer_mobile, adrs.address1, adrs.address2, adrs.postcode, adrs.city, adrs.other FROM `' . _DB_PREFIX_ . 'shippify_order` shps INNER JOIN `' . _DB_PREFIX_ . 'orders` ords ON shps.id_order = ords.id_order INNER JOIN `' . _DB_PREFIX_ . 'customer` cuts ON ords.id_customer = cuts.id_customer INNER JOIN `' . _DB_PREFIX_ . 'address` adrs ON ords.id_address_delivery = adrs.id_address WHERE shps.id_shippify_order = ' . $id_shippify_order;
     $order = Db::getInstance()->getRow($order_sql);
 
     // If the order has already been shipped
     if ($order['shippify_order_status'] == 1) return TRUE;
 
-    // Non Private Product Name Query
-    $products_sql = 'SELECT dets.`product_id` AS id, dets.`product_name` AS name, dets.`product_quantity` AS qty, prds.height, prds.width, prds.depth, 3 as size FROM `' . _DB_PREFIX_ . 'shippify_order` shps INNER JOIN `' .  _DB_PREFIX_ . 'order_detail` dets ON shps.id_order = dets.id_order INNER JOIN `' . _DB_PREFIX_ . 'product` prds ON dets.product_id = prds.id_product WHERE shps.`id_shippify_order` = ' . $id_shippify_order;
+    if ($anonimize_products === 'SI'){
+      // Private Product Name Query
+      $products_sql = 'SELECT dets.`product_id` AS id, dets.`product_id` AS name, dets.`product_quantity` AS qty, prds.height, prds.width, prds.depth, 3 as size FROM `' . _DB_PREFIX_ . 'shippify_order` shps INNER JOIN `' .  _DB_PREFIX_ . 'order_detail` dets ON shps.id_order = dets.id_order INNER JOIN `' . _DB_PREFIX_ . 'product` prds ON dets.product_id = prds.id_product WHERE shps.`id_shippify_order` = ' . $id_shippify_order;
+    } else {
+      // Non Private Product Name Query
+      $products_sql = 'SELECT dets.`product_id` AS id, dets.`product_name` AS name, dets.`product_quantity` AS qty, prds.height, prds.width, prds.depth, 3 as size FROM `' . _DB_PREFIX_ . 'shippify_order` shps INNER JOIN `' .  _DB_PREFIX_ . 'order_detail` dets ON shps.id_order = dets.id_order INNER JOIN `' . _DB_PREFIX_ . 'product` prds ON dets.product_id = prds.id_product WHERE shps.`id_shippify_order` = ' . $id_shippify_order;
+    }
 
-    // Private Product Name Query
-    // $products_sql = 'SELECT dets.`product_id` AS id, dets.`product_id` AS name, dets.`product_quantity` AS qty, prds.height, prds.width, prds.depth, 3 as size FROM `' . _DB_PREFIX_ . 'shippify_order` shps INNER JOIN `' .  _DB_PREFIX_ . 'order_detail` dets ON shps.id_order = dets.id_order INNER JOIN `' . _DB_PREFIX_ . 'product` prds ON dets.product_id = prds.id_product WHERE shps.`id_shippify_order` = ' . $id_shippify_order;
-    $products = Db::getInstance()->executeS($products_sql);
+    $products_array = Db::getInstance()->executeS($products_sql);
+
+    if ($compact_products === 'SI'){
+      $get_products_name = function($product){
+        return $product["name"];
+      };
+      $products_name_array = array_map($get_products_name, $products_array);
+      $products_array = array (
+        array(
+          "name" => implode(" | ", $products_name_array),
+          "qty" => 1,
+          "size" => 3
+        )
+      );
+    }
 
     $address = $order['address1'] . ', ' . $order['city'] . ', ' . $order['postcode'];
+    $address2 = $order['address1'] . ', ' . $order['address2'] . ', ' . $order['city'] . ', ' . $order['postcode'] . ', ' . $order['other'] . ' ' . $order['numero_house'] . ' ' . $order['dpto_house'];
 
     // Prepare the request
     $post_data = array(
@@ -272,10 +292,11 @@ class AdminShippifyOrdersController extends ModuleAdminController
               'phonenumber' => (!empty($order['customer_phone']) ? $order['customer_phone'] : $order['customer_mobile']),
             ),
             'location' => array(
-              'address' => $address
+              'address' => $address,
+              'instructions' => $address2
             )
           ),
-          'packages' => $products,
+          'packages' => $products_array,
           'total_amount' => $order['total_paid'],
           'referenceId' => $order['id'] . ' - ' . $order['ref'], 
           'tags' => array(

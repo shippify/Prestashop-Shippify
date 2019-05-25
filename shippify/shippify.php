@@ -22,8 +22,8 @@ class Shippify extends Module
   {
     $this->name = 'shippify';
     $this->tab = 'shipping_logistics';
-    $this->version = '0.4';
-    $this->author = 'Álvaro Ortiz & Leonardo Kuffo';
+    $this->version = '0.5';
+    $this->author = 'Leonardo Kuffo & Álvaro Ortiz';
     $this->bootstrap = true;
     parent::__construct();
     $this->displayName = $this->l('Shippify');
@@ -119,6 +119,8 @@ class Shippify extends Module
       Configuration::deleteByName('SHPY_WAREHOUSE_ID') &&
       Configuration::deleteByName('SHPY_SUPPORT_EMAIL') &&
       Configuration::deleteByName('SHPY_SUPPORT_PHONE') &&
+      Configuration::deleteByName('SHPY_COMPACT_PRODUCTS') &&
+      Configuration::deleteByName('SHPY_ANONIMIZE_PRODUCTS') &&
       Configuration::deleteByName('SHPY_ZONE')
     ) {
       return TRUE;
@@ -157,6 +159,12 @@ class Shippify extends Module
     $sender_support_email = Configuration::get('SHPY_SUPPORT_PHONE', '');
     $this->context->smarty->assign('sender_support_phone', $sender_support_email);
 
+    $anonimize_products = Configuration::get('SHPY_ANONIMIZE_PRODUCTS', '');
+    $this->context->smarty->assign('anonimize_products', $anonimize_products);
+
+    $compact_products = Configuration::get('SHPY_COMPACT_PRODUCTS', '');
+    $this->context->smarty->assign('compact_products', $compact_products);
+
     $selected_zone_id = Configuration::get('SHPY_ZONE', '-1');
     $available_zones_sql = 'select *, (id_zone = \'' . $selected_zone_id . '\') as selected from `' . _DB_PREFIX_ . 'zone`';
     $available_zones = Db::getInstance()->executeS($available_zones_sql);
@@ -181,6 +189,8 @@ class Shippify extends Module
       $current_id_warehouse = Configuration::get('SHPY_WAREHOUSE_ID', '');
       $current_sender_support_email = Configuration::get('SHPY_SUPPORT_EMAIL', '');
       $current_sender_support_phone = Configuration::get('SHPY_SUPPORT_PHONE', '');
+      $current_anonimize_products = Configuration::get('SHPY_ANONIMIZE_PRODUCTS', '');
+      $current_compact_products = Configuration::get('SHPY_COMPACT_PRODUCTS', '');
       $current_operating_zone = Configuration::get('SHPY_ZONE', '');
 
       // Get NEW values
@@ -189,6 +199,8 @@ class Shippify extends Module
       $id_warehouse = Tools::getValue('warehouse-id');
       $sender_support_email = Tools::getValue('sender-support-email');
       $sender_support_phone = Tools::getValue('sender-support-phone');
+      $anonimize_products = Tools::getValue('anonimize_products');
+      $compact_products = Tools::getValue('compact_products');
       $operating_zone = Tools::getValue('operating-zone');
 
       // Obtain which one of them have changed
@@ -196,6 +208,8 @@ class Shippify extends Module
       $has_id_warehouse_changed = strcmp($current_id_warehouse, $id_warehouse) != 0;
       $has_support_email_changed = strcmp($current_sender_support_email, $sender_support_email) != 0;
       $has_support_phone_changed = strcmp($current_sender_support_email, $sender_support_email) != 0;
+      $has_anonimize_products_changed = strcmp($current_anonimize_products, $anonimize_products) != 0;
+      $has_compact_products_changed = strcmp($current_compact_products, $compact_products) != 0;
       $has_operating_zone_changed = strcmp($current_operating_zone, $operating_zone) != 0;
 
       // Check which one of them is missing
@@ -204,6 +218,8 @@ class Shippify extends Module
       $should_update_support_email = empty($current_sender_support_email) || $has_support_email_changed;
       $should_update_support_phone = empty($current_sender_support_phone) || $has_support_phone_changed;
       $should_update_operating_zone = $has_operating_zone_changed;
+      $should_update_anonimize_products = empty($current_anonimize_products) || $has_anonimize_products_changed;
+      $should_update_compact_products = empty($current_compact_products) || $has_compact_products_changed;
 
 
       if ($should_update_credentials || $should_update_id_warehouse)
@@ -300,6 +316,27 @@ class Shippify extends Module
           $this->context->smarty->assign('failure_email', $this->l('Shippify support email could not be updated.'));
         }
       }
+
+      if ($should_update_anonimize_products) {
+        if (empty($anonimize_products)) {
+          $this->context->smarty->assign('failure_anonimize_products', $this->l('Debe elegir una opción para anonimizar productos.'));
+        } else if (Configuration::updateValue('SHPY_ANONIMIZE_PRODUCTS', $anonimize_products)) {
+          $this->context->smarty->assign('success_anonimize_products', $this->l('Se ha seleccionado opción para anonimizar productos.'));
+        } else {
+          $this->context->smarty->assign('failure_anonimize_products', $this->l('No se pudo actualizar la opción para anonimizar productos.'));
+        }
+      }
+
+      if ($should_update_compact_products) {
+        if (empty($compact_products)) {
+          $this->context->smarty->assign('failure_compact_products', $this->l('Debe elegir una opción para compactar los productos.'));
+        } else if (Configuration::updateValue('SHPY_COMPACT_PRODUCTS', $compact_products)) {
+          $this->context->smarty->assign('success_compact_products', $this->l('Se ha seleccionado opción para compactar productos.'));
+        } else {
+          $this->context->smarty->assign('failure_compact_products', $this->l('No se pudo actualizar la opción para compactar productos.'));
+        }
+      }
+
 
       if ($should_update_support_phone) {
         if (empty($sender_support_phone)) {
