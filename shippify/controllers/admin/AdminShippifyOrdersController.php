@@ -269,7 +269,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
       );
     }
 
-    $address = $order['address1'] . ', ' . $order['city'] . ', ' . $order['postcode'];
+    $address = $order['address1'] . ', ' . $order['city'] . ' ' . $order['other'] . ', ' . ' #' . (empty($order['numero_house']) ? $order['dpto_house'] : $order['numero_house']);
     $address2 = $order['address1'] . ', ' . $order['address2'] . ', ' . $order['city'] . ', ' . $order['postcode'] . ', ' . $order['other'] . ' ' . $order['numero_house'] . ' ' . $order['dpto_house'];
 
     // Prepare the request
