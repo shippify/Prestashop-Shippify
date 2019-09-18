@@ -269,9 +269,21 @@ class AdminShippifyOrdersController extends ModuleAdminController
       );
     }
 
-    $address2 = $order['address1'] . ', ' . $order['address2'] . ', ' . $order['city'] . ', ' . $order['other'] . ' ' . $order['numero_house'] . ' ' . $order['dpto_house'];
-    $address = $order['address1'] . ((!empty($order['numero_house']) ? ', ' . $order['numero_house']  : '') . ' ' . ((!empty($order['dpto_house'])) ? ', ' . $order['dpto_house'] : '' )) . ', ' . $order['city']; 
+    $address2 = $order['address1'] . ', ' . $order['address2'] . ', ' . $order['city'] . ', ' . $order['other'];
+    $address = $order['address1'] . ', ' . $order['city']; 
   
+    if (isset($order['numero_house'])) {
+      $address2 = $address2 . ' ' . $order['numero_house'];
+      $address = $address . ' ' . $order['numero_house'];
+    }
+
+    if(isset($order['dpto_house'])) {
+      $address2 = $address . ' ' . $order['dpto_house'];
+      $address = $address . ' ' . $order['dpto_house'];
+    }
+  
+    $address = $address . ', ' . $order['city']; 
+
     // Prepare the request
     $post_data = array(
       'deliveries' => array(
