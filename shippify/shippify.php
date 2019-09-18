@@ -41,7 +41,7 @@ class Shippify extends Module
       $this->registerHook('displayAdminOrderTabShip') &&
       $this->registerHook('actionValidateOrder') &&
       $this->createShippifyOrdersTable() &&
-      $this->installTab('AdminOrders', 'AdminShippifyOrders', 'Shippify Orders')
+      $this->installTab('AdminParentOrders', 'AdminShippifyOrders', 'Shippify Orders')
     ) {
       return TRUE;
     }
@@ -57,16 +57,19 @@ class Shippify extends Module
   public function installTab($parent, $class_name, $name)
   {
     $tab = new Tab();
-    $tab->id_parent = (int)Tab::getIdFromClassName($parent);
+    $tab->active = 1;
+    $tab->class_name = $class_name;
+    $tab->position = 3;
     $tab->name = array();
     foreach (Language::getLanguages(true) as $lang)
     {
       $tab->name[$lang['id_lang']] = $name;
     }
-    $tab->class_name = $class_name;
+    $tab->id_parent = (int)Tab::getIdFromClassName($parent);
     $tab->module = $this->name;
-    $tab->active = 1;
-    return $tab->add();
+    $tab->add();
+    $tab->save();
+    return TRUE;
   }
 
 
