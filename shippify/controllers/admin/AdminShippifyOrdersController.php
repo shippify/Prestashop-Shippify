@@ -60,6 +60,11 @@ class AdminShippifyOrdersController extends ModuleAdminController
         'class' => 'fixed-width-xs',
         'filter_key' => 'ords!id_order'
       ),
+      'id_pdf' => array(
+      'title' => $this->l('ID PS'),
+      'align' => 'text-center',
+      'class' => 'fixed-width-xs'
+      ),     
       'task_id' => array(
         'title' => $this->l('Track #')
       ),
@@ -102,6 +107,11 @@ class AdminShippifyOrdersController extends ModuleAdminController
         'filter_type' => 'int',
         'order_key' => 'osname'
       ),
+			'id_carrier' => array(
+				'title' => $this->l('Carrier'),
+				'align' => 'left',
+				'filter_key' => 'transporte!name',							
+				),      
       'date_add' => array(
         'title' => $this->l('Date'),
         'align' => 'text-right',
