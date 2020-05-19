@@ -65,8 +65,8 @@
         <div class="col-lg-9">
           <select id="shpy__configuration__operating-anonimize__input" name="anonimize_products" value="{$anonimize_products}">
             <option value="-1">{l s='Selecciona una opción' mod='shippify'}</h3>
-              <option value="SI"{if $anonimize_products == 'SI' } selected{/if}>SI</h3>
-              <option value="NO"{if $anonimize_products == 'NO' } selected{/if}>NO</h3>
+            <option value="SI"{if $anonimize_products == 'SI' } selected{/if}>SI</h3>
+            <option value="NO"{if $anonimize_products == 'NO' } selected{/if}>NO</h3>
           </select>
         </div>
         {if isset($success_anonimize_products)}

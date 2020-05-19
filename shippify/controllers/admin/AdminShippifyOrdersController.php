@@ -8,10 +8,10 @@ class AdminShippifyOrdersController extends ModuleAdminController
   public function __construct()
   {
 
-    $this->table = 'shippify_order';
-    $this->className = 'ShippifyOrder';
-    $this->bootstrap = true;
-
+    $this->table = 'shippify_order'; // SQL table name, will be prefixed with _DB_PREFIX_
+    $this->className = 'ShippifyOrder';  // PHP class name
+    $this->bootstrap = true; // use Bootstrap CSS
+    $this->allow_export = false; // allow export in CSV, XLS..
     $this->lang = false;
     $this->explicitSelect = true;
     $this->context = Context::getContext();
@@ -141,21 +141,25 @@ class AdminShippifyOrdersController extends ModuleAdminController
 
     $test = 'https://api.shippify.co/v1/prestashop/orders/statuses/?ids=' . $joined_tasks_ids;
     
+    //echo $test;
     // get all orders status
-    $response = file_get_contents('https://api.shippify.co/v1/prestashop/orders/statuses/?ids=' . $joined_tasks_ids, FALSE, $context);
+    $response = @file_get_contents('https://api.shippify.co/v1/prestashop/orders/statuses/?ids=' . $joined_tasks_ids, FALSE, $context);
 
     $response_data = json_decode($response, TRUE);
     if ($response_data["code"] !== "ERROR"){
       $all_statuses = $response_data['data']['statuses'];
 
-      foreach ($all_statuses as $single_status) {
-        $task_id = $single_status['id'];
-        $response_readable_status = $single_status['_status'];
-        $response_status = $single_status['state'];
-    
-        $update_status_query = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = '. $response_status . ' , `readable_status` = \'' . $response_readable_status . '\' WHERE `task_id` = \'' . $task_id . '\'';
-    
-        Db::getInstance()->execute($update_status_query);
+      if (is_array($all_statuses) || is_object($all_statuses))
+      {
+        foreach ($all_statuses as $single_status) {
+          $task_id = $single_status['id'];
+          $response_readable_status = $single_status['_status'];
+          $response_status = $single_status['state'];
+      
+          $update_status_query = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = '. $response_status . ' , `readable_status` = \'' . $response_readable_status . '\' WHERE `task_id` = \'' . $task_id . '\'';
+      
+          Db::getInstance()->execute($update_status_query);
+        }
       }
     }
     $confirmed_orders_by_id = array_reduce($confirmed_orders, $get_id_from_order, array());
@@ -173,6 +177,24 @@ class AdminShippifyOrdersController extends ModuleAdminController
           'confirm' => $this->l('Dispatch all of selected items?'),
       ),
     );
+  }
+
+  /**
+   * Surcharge de la fonction de traduction sur PS 1.7 et supérieur.
+   * La fonction globale ne fonctionne pas
+   * @param type $string
+   * @param type $class
+   * @param type $addslashes
+   * @param type $htmlentities
+   * @return type
+   */
+  protected function l($string, $class = null, $addslashes = false, $htmlentities = true)
+  {
+      if ( _PS_VERSION_ >= '1.7') {
+          return Context::getContext()->getTranslator()->trans($string);
+      } else {
+          return parent::l($string, $class, $addslashes, $htmlentities);
+      }
   }
 
   protected function processBulkShippify(){
@@ -328,7 +350,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
     ));
 
     // Do the request
-    $response = file_get_contents('https://api.shippify.co/v1/deliveries', FALSE, $context);
+    $response = @file_get_contents('https://api.shippify.co/v1/deliveries', FALSE, $context);
 
     // If error, nothing happens
     if ($response === FALSE) return FALSE;
