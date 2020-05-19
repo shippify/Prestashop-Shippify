@@ -332,7 +332,7 @@ class AdminShippifyOrdersController extends ModuleAdminController
           ),
           'packages' => $products_array,
           'total_amount' => $order['total_paid'],
-          'referenceId' => $order['id'] . ' - ' . $order['ref'], 
+          'referenceId' => '0000000' . $order['id'], 
           'tags' => array(
             'PRESTASHOP'
           )
