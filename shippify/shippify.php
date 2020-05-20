@@ -175,6 +175,17 @@ class Shippify extends Module
     $this->context->smarty->assign('selected_zone_id', $selected_zone_id);
   }
 
+  public function getHttpCode($http_response_header)
+    {
+        if(is_array($http_response_header))
+        {
+            $parts=explode(' ',$http_response_header[0]);
+            if(count($parts)>1) //HTTP/1.0 <code> <text>
+                return intval($parts[1]); //Get code
+        }
+        return 0;
+    }
+
   /**
    *  Process the configuration values when submited:
    *      - Checks the validity of the api id and api secret.
@@ -237,22 +248,24 @@ class Shippify extends Module
         }
         else
         {
-          // Prepare curl request to check the input warehouse validaty
+          // Prepare request to check the input warehouse validaty
           $api_token = base64_encode($api_id . ':' . $api_secret);
-          $ch = curl_init();
           $url = 'https://api.shippify.co/warehouses/' . (!empty($id_warehouse) ? $id_warehouse : 'none') . '/id';
 
-          curl_setopt($ch, CURLOPT_URL, $url);
-          curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-          curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Authorization: Basic $api_token\r\n",
-            "Content-Type: application/json\r\n"
+          $context = stream_context_create(array(
+              'http' => array(
+              'method' => 'GET',
+              'header' => "Authorization: Basic {$api_token}\r\n" .
+              "Content-Type: application/json\r\n"
+            )
           ));
-          $output = curl_exec($ch);
-          $response = json_decode($output);
-          $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-          curl_close($ch);
+            
+          $response = @file_get_contents($url, FALSE, $context);
+            
+          $response_data = json_decode($response, TRUE);
 
+          $status = $this->getHttpCode($http_response_header);
+          
           $is_server_down = $status >= 500;
 
           $are_credentials_valid = $status != 401;
