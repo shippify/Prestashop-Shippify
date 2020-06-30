@@ -60,13 +60,7 @@ To use the module correctly, the shop owner should follow these instructions to 
     3. Enter an E-mail for support contact if something unexpected happened.
     4. Select the zone for shippify to operate in.  
 
-2. Configure Shippify on Carrier:
-    1. Go to the **Shipping** -> **Carriers** tab.
-    2. Select the Shippify Carrier.
-    3. Go to the **Shipping locations and costs** tab.
-    4.  Select the zones for shippify to operate in.
-
-3. You are ready to go! 
+2. You are ready to go! 
 
 ## How it works ##
 
