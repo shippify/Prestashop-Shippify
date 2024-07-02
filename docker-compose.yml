@@ -1,0 +1,49 @@
+services:
+  mysql:
+    container_name: some-mysql
+    image: mysql:5.7
+    restart: unless-stopped
+    platform: linux/x86_64
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: prestashop
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+    networks:
+      - prestashop_network
+    volumes:
+      - dbdata:/var/lib/mysql
+  
+  prestashop:
+    container_name: prestashop
+    image: prestashop/prestashop:latest
+    # image: prestashop/prestashop:8.1.3-8.1
+    # image: prestashop/prestashop:1.7.6.9-7.2
+    restart: unless-stopped
+    platform: linux/x86_64
+    depends_on:
+      - mysql
+    ports:
+      - 8080:80
+    environment:
+      DB_SERVER: some-mysql
+      DB_NAME: prestashop
+      DB_USER: root
+      DB_PASSWD: admin
+      PS_INSTALL_AUTO: 1
+      PS_DOMAIN: localhost:8080
+    networks:
+      - prestashop_network
+    volumes:
+      - psdata:/var/www/html
+      - type: bind
+        source: ./shippify
+        target: /var/www/html/modules/shippify
+
+networks:
+    prestashop_network:
+
+volumes:
+  psdata:
+  dbdata:

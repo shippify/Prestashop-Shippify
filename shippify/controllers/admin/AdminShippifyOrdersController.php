@@ -117,54 +117,55 @@ class AdminShippifyOrdersController extends ModuleAdminController
     // Get the dispatched orders
     $confirmed_orders_sql = "select id_shippify_order, task_id from `" . _DB_PREFIX_ . "shippify_order` where task_id is not null";
     $confirmed_orders = Db::getInstance()->executeS($confirmed_orders_sql);
+    
     $get_id_from_order = function ($order_ids, $order) {
       $order_ids[$order['id_shippify_order']] = $order['task_id'];
       return $order_ids;
     };
 
-
-    $get_tasks_ids = function($order){
+    $get_tasks_ids = function($order) {
       return $order['task_id'];
     };
 
-    $shippify_tasks_ids = array_map($get_tasks_ids, $confirmed_orders);
-    $joined_tasks_ids = implode(",", $shippify_tasks_ids);
-    $api_token = Configuration::get('SHPY_API_TOKEN', '');
+    if (count($confirmed_orders) > 0) {
+      $shippify_tasks_ids = array_map($get_tasks_ids, $confirmed_orders);
+      $joined_tasks_ids = implode(",", $shippify_tasks_ids);
+      $api_token = Configuration::get('SHPY_API_TOKEN', '');
 
-    $context = stream_context_create(array(
-      'http' => array(
-        'method' => 'GET',
-        'header' => "Authorization: Basic {$api_token}\r\n" .
-        "Content-Type: application/json\r\n"
-      )
-    ));
+      $context = stream_context_create(array(
+        'http' => array(
+          'method' => 'GET',
+          'header' => "Authorization: Basic {$api_token}\r\n" .
+          "Content-Type: application/json\r\n"
+        )
+      ));
 
-    $test = 'https://api.shippify.co/v1/prestashop/orders/statuses/?ids=' . $joined_tasks_ids;
+      // get all orders status
+      $response = @file_get_contents('https://api.shippify.co/v1/prestashop/orders/statuses/?ids=' . $joined_tasks_ids, FALSE, $context);
+  
+      if ($response !== FALSE) {
+        $response_data = json_decode($response, TRUE);
+
+        if ($response_data["code"] !== "ERROR") {
+          $all_statuses = $response_data['data']['statuses'];
     
-    //echo $test;
-    // get all orders status
-    $response = @file_get_contents('https://api.shippify.co/v1/prestashop/orders/statuses/?ids=' . $joined_tasks_ids, FALSE, $context);
-
-    $response_data = json_decode($response, TRUE);
-    if ($response_data["code"] !== "ERROR"){
-      $all_statuses = $response_data['data']['statuses'];
-
-      if (is_array($all_statuses) || is_object($all_statuses))
-      {
-        foreach ($all_statuses as $single_status) {
-          $task_id = $single_status['id'];
-          $response_readable_status = $single_status['_status'];
-          $response_status = $single_status['state'];
-      
-          $update_status_query = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = '. $response_status . ' , `readable_status` = \'' . $response_readable_status . '\' WHERE `task_id` = \'' . $task_id . '\'';
-      
-          Db::getInstance()->execute($update_status_query);
+          if (is_array($all_statuses) || is_object($all_statuses)) {
+            foreach ($all_statuses as $single_status) {
+              $task_id = $single_status['id'];
+              $response_readable_status = $single_status['_status'];
+              $response_status = $single_status['state'];
+          
+              $update_status_query = 'UPDATE `' . _DB_PREFIX_ . 'shippify_order` SET `status` = '. $response_status . ' , `readable_status` = \'' . $response_readable_status . '\' WHERE `task_id` = \'' . $task_id . '\'';
+          
+              Db::getInstance()->execute($update_status_query);
+            }
+          }
         }
       }
     }
+
     $confirmed_orders_by_id = array_reduce($confirmed_orders, $get_id_from_order, array());
     $this->confirmed_orders_by_id = $confirmed_orders_by_id;
-
     
     parent::__construct();
 
