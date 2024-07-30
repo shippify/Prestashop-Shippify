@@ -22,7 +22,7 @@ class Shippify extends Module
   {
     $this->name = 'shippify';
     $this->tab = 'shipping_logistics';
-    $this->version = '0.5';
+    $this->version = '0.5.1';
     $this->author = 'Leonardo Kuffo & Álvaro Ortiz';
     $this->bootstrap = true;
     parent::__construct();

@@ -1,0 +1,34 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Branch
+        uses: actions/checkout@master
+      
+      - name: Get XML
+        id: get_xml
+        uses: mavrosxristoforos/get-xml-info@1.0
+        with:
+          xml-file: 'config.xml'
+          xpath: '//version'
+
+      - name: Zip Module
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          path: 'shippify'
+          filename: 'release.zip'
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: 'release.zip'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ steps.get_xml.outputs.info }}
