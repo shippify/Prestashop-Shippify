@@ -2,7 +2,7 @@
 <module>
 	<name>shippify</name>
 	<displayName><![CDATA[Shippify]]></displayName>
-	<version><![CDATA[0.3]]></version>
+	<version><![CDATA[0.5.1]]></version>
 	<description><![CDATA[Add easy shipping at checkout with Shippify.]]></description>
 	<author><![CDATA[&Aacute;lvaro Ortiz & Leonardo Kuffo]]></author>
 	<tab><![CDATA[shipping_logistics]]></tab>

@@ -1,6 +1,6 @@
 # Prestashop Shippify Module
 
-<div style="text-align: center;">
+<div style="text-align: center; width: 100%;">
     <img src="https://cdn.shippify.co/dash/users/img/users-shippify-logo.svg" alt="Shippify" style="max-height: 135px; max-width: 522px;" />
 </div>
 
