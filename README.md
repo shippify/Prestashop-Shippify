@@ -1,6 +1,6 @@
-# Prestashop Shippify Module
+# PrestaShop Shippify Module
 
-<div style="text-align: center; width: 100%;">
+<div align="center">
     <img src="https://cdn.shippify.co/dash/users/img/users-shippify-logo.svg" alt="Shippify" style="max-height: 135px; max-width: 522px;" />
 </div>
 
@@ -9,13 +9,14 @@
 - **Contributors:**  [Álvaro Ortiz](https://github.com/AJShippify), [Leonardo Kuffo](https://github.com/lkuffo/), [Ruben Carvajal](https://github.com/rubancar/), [Matheus de Paula](https://github.com/matheus-depaula/)
 - **Tags:** Shipping, delivery, shippify
 - **Version:** 0.5.1
-- **Compatible With:** Prestashop 1.7.x and 8.x
+- **Compatible With:** PrestaShop 1.7.x and 8.x
+- **Documentation:** https://docs.shippify.co/developers/v/en/e-commerce/prestashop
 
-Deliver your Prestashop shop products in less than 24h. Integration between Prestashop and Shippify. 
+Deliver your PrestaShop shop products in less than 24h. Integration between PrestaShop and Shippify. 
 
 ## Description ##
 
-[Shippify](http://www.shippify.co/) is a technology company that offers their clients **Same-Day Delivery** shipping for their products. This module allows Prestashop store owners to use Shippify as a delivery method in their shop. 
+[Shippify](http://www.shippify.co/) is a technology company that offers their clients **Same-Day Delivery** shipping for their products. This module allows PrestaShop store owners to use Shippify as a delivery method in their shop. 
 
 The module currently offers the following functionalities:
 
@@ -29,22 +30,20 @@ The module currently offers the following functionalities:
 
 ### At Host File System: ###
 
-1. Clone this repo `git clone https://github.com/shippify/Prestashop-Shippify.git` or download it as a zip file.
+1. Get the latest release [here](https://github.com/shippify/Prestashop-Shippify/releases) by downloading the **shippify.zip** file.
 2. Drag the **shippify** folder to your host server's **modules** directory.
-3. At Prestashop, go to **Modules and Services** tab.
-4. Type `Shippify` at the Modules List search box.
+3. At PrestaShop, go to **Modules and Services** tab.
+4. Type **Shippify** at the modules list search box.
 5. Click on the **Install** button to install the module.
 
-### At Prestashop: ###
+### At PrestaShop: ###
 
-1. Clone this repo `git clone https://github.com/shippify/Prestashop-Shippify.git` or download it as a zip file.
-2. In your dashboard go to **Modules and Services** tab.
-3. In the upper right corner click on **Add new module**.
-4. Click on **Choose a File**.
-5. Select a .zip file containing the **shippify** folder.
+1. Get the latest release [here](https://github.com/shippify/Prestashop-Shippify/releases) by downloading the **shippify.zip** file.
+2. In your panel, go to the "Modules and Services" tab. In the upper right corner, click at the **Add new module** button.
+4. Click to choose a file and upload the **shippify.zip** file you have downloaded.
 6. Click on **Upload This Module**.
-7. At Prestashop, go to **Modules and Services** tab.
-8. Type `Shippify` at the Modules List search box.
+7. At PrestaShop, go to **Modules and Services** tab.
+8. Type **Shippify** at the modules list search box.
 9. Click on the **Install** button to install the module.
 
 ![Finding shippify module](https://i.imgur.com/opQFYdB.png)
@@ -74,7 +73,7 @@ Aftere this, you are ready to go!
 
 1. At the moment a customer makes a purchase from your store, a Shippify Order is created. If the order is not processed, you will have to create the Shippify Order manually. You may do this one-by-one by accessing the order detail and click on **Confirm Shipment**, or in bulk (**Create Shippify Draft**).
 
-2. You can manage the pending shippify orders from your Prestashop Store in the **Orders** -> **Shippify Orders** tab. Here you can also send them to create in our system (Clicking on: DISPATCH ORDER button).
+2. You can manage the pending shippify orders from your PrestaShop Store in the **Orders** -> **Shippify Orders** tab. Here you can also send them to create in our system (Clicking on: DISPATCH ORDER button).
 
 3. Once you select an order and dispatched it (DISPATCH ORDER button), the associated task will be created in the Shippify server and will be ready to be dispatched by our Shippers to your customers.
 
